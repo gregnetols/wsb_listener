@@ -4,24 +4,22 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from ProcessComment import process_comment, parse_ticker_symbols, analyze_ticker_comments
 from WriteToMongo import write_comment, query_comments, write_hour_ticker_counts
-from utilities import read_yml
 
-praw_config = read_yml('praw_config.yml')
-reddit = praw.Reddit(client_id=praw_config['client_id'],
-                     client_secret=praw_config['client_secret'],
-                     password=praw_config['password'],
-                     user_agent=praw_config['user_agent'],
-                     username=praw_config['username'])
+
+reddit = praw.Reddit(client_id='ATOrE1YORdowCA',
+                     client_secret='0QDTt2o9we6pOINOVIr_pzaPFF0',
+                     password='greg211366',
+                     user_agent='PrawTime_Streaming',
+                     username='PrawTime')
 subreddit = reddit.subreddit('wallstreetbets')
 
-mongo_config = read_yml('mongo_config.yml')
-client = MongoClient(host=mongo_config['host'],
-                     port=mongo_config['port'])
+client = MongoClient('localhost', 27017)
 db = client.wallStreetBets
 
 
 def main():
-    then = datetime.now()
+    current_hour = datetime.now().hour
+    current_day = datetime.now().day
 
     #For testing truncate collection before each run
     db.drop_collection('comments')
@@ -31,9 +29,6 @@ def main():
 
         comment_dict = process_comment(comment)
         comment_dict = parse_ticker_symbols(comment_dict)
-        #Test
-        print(comment_dict['created_utc'])
-        #^^^
         write_comment(db, 'comments', comment_dict)
 
         # Once an hour
