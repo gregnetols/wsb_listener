@@ -22,7 +22,6 @@ db = client.wallStreetBets
 
 
 def main():
-    then = datetime.now()
     current_hour = datetime.now().hour
     current_day = datetime.now().day
 
