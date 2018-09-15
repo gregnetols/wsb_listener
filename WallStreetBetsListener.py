@@ -31,7 +31,9 @@ def main():
 
         comment_dict = process_comment(comment)
         comment_dict = parse_ticker_symbols(comment_dict)
+        #Test
         print(comment_dict['created_utc'])
+        #^^^
         write_comment(db, 'comments', comment_dict)
 
         # Once an hour
