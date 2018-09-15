@@ -4,16 +4,20 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from ProcessComment import process_comment, parse_ticker_symbols, analyze_ticker_comments
 from WriteToMongo import write_comment, query_comments, write_hour_ticker_counts
+from utilities import read_yml
 
 
-reddit = praw.Reddit(client_id='ATOrE1YORdowCA',
-                     client_secret='0QDTt2o9we6pOINOVIr_pzaPFF0',
-                     password='greg211366',
-                     user_agent='PrawTime_Streaming',
-                     username='PrawTime')
+praw_config = read_yml("praw_config.yml")
+reddit = praw.Reddit(client_id=praw_config['client_id'],
+                     client_secret=praw_config['client_secret'],
+                     password=praw_config['password'],
+                     user_agent=praw_config['user_agent'],
+                     username=praw_config['username'])
 subreddit = reddit.subreddit('wallstreetbets')
 
-client = MongoClient('localhost', 27017)
+mongo_config = read_yml("mongo_config.yml")
+client = MongoClient(host=mongo_config['host'],
+                     port=mongo_config['ort'])
 db = client.wallStreetBets
 
 
