@@ -40,8 +40,8 @@ def main():
         if new_hour(current_hour):
             current_hour = datetime.now().hour
 
-            ticker_comments = query_comments(db, 'comments')
-            ticker_counts = analyze_ticker_comments(ticker_comments)
+            ticker_comments, beg_last_hour = query_comments(db, 'comments')
+            ticker_counts = analyze_ticker_comments(ticker_comments, beg_last_hour)
 
             write_hour_ticker_counts(db, 'hour', ticker_counts)
 
