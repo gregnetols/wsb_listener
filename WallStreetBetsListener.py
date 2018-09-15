@@ -17,11 +17,12 @@ subreddit = reddit.subreddit('wallstreetbets')
 
 mongo_config = read_yml("mongo_config.yml")
 client = MongoClient(host=mongo_config['host'],
-                     port=mongo_config['ort'])
+                     port=mongo_config['port'])
 db = client.wallStreetBets
 
 
 def main():
+    then = datetime.now()
     current_hour = datetime.now().hour
     current_day = datetime.now().day
 
