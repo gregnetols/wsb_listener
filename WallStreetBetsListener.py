@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 from ProcessComment import process_comment, parse_ticker_symbols, analyze_ticker_comments
 from WriteToMongo import write_comment, query_comments, write_hour_ticker_counts
-from utilities import read_yml
+from utilities import read_yml, new_hour, new_day
 
 
 praw_config = read_yml("praw_config.yml")
@@ -22,7 +22,6 @@ db = client.wallStreetBets
 
 
 def main():
-    then = datetime.now()
     current_hour = datetime.now().hour
     current_day = datetime.now().day
 
@@ -40,8 +39,8 @@ def main():
         if new_hour(current_hour):
             current_hour = datetime.now().hour
 
-            ticker_comments = query_comments(db, 'comments')
-            ticker_counts = analyze_ticker_comments(ticker_comments)
+            ticker_comments, beg_last_hour = query_comments(db, 'comments')
+            ticker_counts = analyze_ticker_comments(ticker_comments, beg_last_hour)
 
             write_hour_ticker_counts(db, 'hour', ticker_counts)
 
