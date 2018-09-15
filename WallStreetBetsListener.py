@@ -37,13 +37,16 @@ def main():
         write_comment(db, 'comments', comment_dict)
 
         # Once an hour
-        if datetime.now() > then + timedelta(hours=1):
-            then = datetime.now()
+        if new_hour(current_hour):
+            current_hour = datetime.now().hour
 
             ticker_comments = query_comments(db, 'comments')
             ticker_counts = analyze_ticker_comments(ticker_comments)
 
             write_hour_ticker_counts(db, 'hour', ticker_counts)
+
+        if new_day(current_day):
+            current_day = datetime.now().day
 
 
 if __name__ == '__main__':
