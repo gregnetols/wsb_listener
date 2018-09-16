@@ -26,8 +26,8 @@ def main():
     current_day = datetime.now().day
 
     #For testing truncate collection before each run
-    db.drop_collection('comments')
-    db.drop_collection('hour')
+    #db.drop_collection('comments')
+    #db.drop_collection('hour')
 
     for comment in subreddit.stream.comments():
 
@@ -39,8 +39,8 @@ def main():
         if new_hour(current_hour):
             current_hour = datetime.now().hour
 
-            ticker_comments, beg_last_hour = query_comments(db, 'comments')
-            ticker_counts = analyze_ticker_comments(ticker_comments, beg_last_hour)
+            ticker_comments, beg_last_hour, end_last_hour = query_comments(db, 'comments')
+            ticker_counts = analyze_ticker_comments(ticker_comments, beg_last_hour, end_last_hour)
 
             write_hour_ticker_counts(db, 'hour', ticker_counts)
 

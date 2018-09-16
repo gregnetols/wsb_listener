@@ -13,7 +13,9 @@ def read_yml(File):
 
 
 def new_hour(current_hour):
+    print(current_hour, '----', datetime.now().hour, '----', datetime.now())
     if current_hour != datetime.now().hour:
+        print('Entered branch')
         return True
     else:
         return False
