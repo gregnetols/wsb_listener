@@ -57,3 +57,19 @@ def analyze_ticker_comments(comments, beg_last_hour, end_last_hour):
                 ticker_dict['tickers'][ticker] = ticker_dict['tickers'][ticker] + 1
 
     return ticker_dict
+
+def analyze_ticker_comments_day(comments, yesterday_date):
+    ticker_dict = {}
+    ticker_dict['date'] = yesterday_date
+    ticker_dict['tickers'] = {}
+
+    pattern = re.compile('[[A-Za-z]{1,6}')
+    for comment in comments:
+        for ticker in comment['tickersPresent']:
+            ticker = pattern.findall(ticker)[0]
+            if ticker not in ticker_dict['tickers'].keys():
+                ticker_dict['tickers'][ticker] = 1
+            else:
+                ticker_dict['tickers'][ticker] = ticker_dict['tickers'][ticker] + 1
+
+    return ticker_dict

@@ -2,8 +2,8 @@ import praw
 import re
 from datetime import datetime, timedelta
 from pymongo import MongoClient
-from ProcessComment import process_comment, parse_ticker_symbols, analyze_ticker_comments
-from WriteToMongo import write_comment, query_comments, write_hour_ticker_counts
+from ProcessComment import process_comment, parse_ticker_symbols, analyze_ticker_comments, analyze_ticker_comments_day
+from WriteToMongo import write_comment, query_comments, write_hour_ticker_counts, query_comments_day, write_day_ticker_counts
 from utilities import read_yml, new_hour, new_day
 
 
@@ -46,6 +46,11 @@ def main():
 
         if new_day(current_day):
             current_day = datetime.now().day
+
+            ticker_comments, yesterday_date = query_comments_day(db, 'comments')
+            ticker_counts = analyze_ticker_comments_day(ticker_comments, yesterday_date)
+
+            write_day_ticker_counts(db, 'day', ticker_counts)
 
 
 if __name__ == '__main__':
