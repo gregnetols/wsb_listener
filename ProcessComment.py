@@ -30,7 +30,6 @@ def parse_ticker_symbols(comment):
     pattern = re.compile('[$][A-Za-z]{1,5}')
 
     matches = [ticker.upper() for ticker in list(set(pattern.findall(text)))]
-    print(matches)
     if len(matches) > 0:
         comment['tickersPresent'] = matches
 
