@@ -27,9 +27,10 @@ def parse_ticker_symbols(comment):
     :return:
     '''
     text = comment['body']
-    pattern = re.compile('[$][A-Za-z][\S]*')
+    pattern = re.compile('[$][A-Za-z]{1,5}')
 
-    matches = list(set(pattern.findall(text)))
+    matches = [ticker.upper() for ticker in list(set(pattern.findall(text)))]
+    print(matches)
     if len(matches) > 0:
         comment['tickersPresent'] = matches
 
@@ -45,6 +46,7 @@ def analyze_ticker_comments(comments, beg_last_hour, end_last_hour):
     ticker_dict = {}
     ticker_dict['start_hour'] = beg_last_hour
     ticker_dict['end_hour'] = end_last_hour
+    ticker_dict['tickers'] = {}
 
     pattern = re.compile('[[A-Za-z]{1,6}')
     for comment in comments:
