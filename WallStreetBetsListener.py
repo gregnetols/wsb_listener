@@ -2,8 +2,8 @@ import praw
 import re
 from datetime import datetime, timedelta
 from pymongo import MongoClient
-from ProcessComment import process_comment, parse_ticker_symbols, analyze_ticker_comments, analyze_ticker_comments_day
-from WriteToMongo import write_comment, query_comments, write_hour_ticker_counts, query_comments_day, write_day_ticker_counts
+from ProcessComment import process_comment, parse_ticker_symbols, aggregate_ticker_counts
+from WriteToMongo import write_comment, query_ticker_comments_by_datetime, write_ticker_counts
 from utilities import read_yml, new_hour, new_day
 
 
@@ -39,18 +39,32 @@ def main():
         if new_hour(current_hour):
             current_hour = datetime.now().hour
 
-            ticker_comments, beg_last_hour, end_last_hour = query_comments(db, 'comments')
-            ticker_counts = analyze_ticker_comments(ticker_comments, beg_last_hour, end_last_hour)
+            beg_last_hour = (datetime.utcnow() - timedelta(hours=1)).replace(minute=0, second=0, microsecond=0)
+            end_last_hour = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
 
-            write_hour_ticker_counts(db, 'hour', ticker_counts)
+            ticker_comments = query_ticker_comments_by_datetime(db, 'comments', beg_last_hour, end_last_hour)
+
+            header_data = {'start_hour': beg_last_hour, 'end_hour': end_last_hour}
+            ticker_counts = aggregate_ticker_counts(ticker_comments, header_data)
+
+            write_ticker_counts(db, 'hour', ticker_counts, 'start_hour')
+
+
 
         if new_day(current_day):
             current_day = datetime.now().day
 
-            ticker_comments, yesterday_date = query_comments_day(db, 'comments')
-            ticker_counts = analyze_ticker_comments_day(ticker_comments, yesterday_date)
+            beg_yesterday = (datetime.utcnow() - timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
+            end_yesterday = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
 
-            write_day_ticker_counts(db, 'day', ticker_counts)
+            ticker_comments = query_ticker_comments_by_datetime(db, 'comments', beg_yesterday, end_yesterday)
+
+            header_data = {'date_gte': beg_yesterday, 'date_lt': end_yesterday}
+            ticker_counts = aggregate_ticker_counts(ticker_comments, header_data)
+
+            write_ticker_counts(db, 'day', ticker_counts, 'date')
+
+
 
 
 if __name__ == '__main__':
